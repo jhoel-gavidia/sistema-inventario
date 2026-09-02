@@ -12,7 +12,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::middleware('jwt')->group(function () {
+Route::middleware(['jwt', 'role:admin'])->group(function () {
     Route::get('/protected', function () {
         return response()->json([
             'message' => 'Acceso concedido',

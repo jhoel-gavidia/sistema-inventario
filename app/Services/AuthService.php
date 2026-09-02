@@ -37,14 +37,14 @@ class AuthService
     }
 
     public function findById(int $id): ?object
-    {
-        $users = DB::select(
-            'SELECT id, name, email FROM users WHERE id = ? LIMIT 1',
-            [$id]
-        );
+{
+    $users = DB::select(
+        'SELECT id, name, email, role FROM users WHERE id = ? LIMIT 1',
+        [$id]
+    );
 
-        return $users[0] ?? null;
-    }
+    return $users[0] ?? null;
+}
 
     public function validateCredentials(string $email, string $password): ?object
     {

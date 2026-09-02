@@ -64,4 +64,18 @@ class CategoriaController extends Controller
             'descripcion'=>$descripcion,
         ], 200);
     }
+
+    public function destroy(int $id) {
+        $delete = DB::delete(
+            "DELETE FROM categorias WHERE id = ?",
+            [$id]
+        );
+
+        if($delete === 0) {
+            return response()->json(['message'=>'Categoria no encontrada'], 404);
+        }
+        return response()->json([
+            'message' => 'Categoria eliminada con exito'
+        ], 200);
+    }
 }

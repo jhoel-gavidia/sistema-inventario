@@ -1,11 +1,25 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\MovimientoStockController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
+Route::middleware('jwt')->group(function () {
+    Route::get('/protected', function () {
+        return response()->json([
+            'message' => 'Acceso concedido',
+            'user' => request()->user(),
+        ]);
+    });
+});
 
 //RUTAS CATEGORIA
 
@@ -41,3 +55,5 @@ Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
 
 Route::get('/movimientos', [MovimientoStockController::class, 'index']);
 Route::post('/movimientos', [MovimientoStockController::class, 'store']);
+
+

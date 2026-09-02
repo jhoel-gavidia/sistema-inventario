@@ -29,12 +29,39 @@ class CategoriaController extends Controller
             [$nombre, $descripcion, now(), now()]
         );
 
-        $id = DB::getPdo()->lastInsertId();
+        $id = (int) DB::getPdo()->lastInsertId();
 
         return response()->json([
             'id'=>$id,
             'nombre' => $nombre,
             'descripcion' => $descripcion,
         ], 201);
+    }
+
+    public function update(Request $request, int $id) {
+        $nombre = $request->input('nombre');
+        $descripcion = $request->input('descripcion');
+
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+        ]);
+
+        $update = DB::update(
+            "UPDATE categorias 
+            SET nombre = ?, descripcion = ?, updated_at = ?
+            WHERE id = ?",
+            [$nombre, $descripcion, now(), $id]
+        );
+
+        if($update === 0) {
+            return response()->json(['message'=>'Categoria no encontrada'], 404);
+        }
+
+        return response()->json([
+            'id'=>$id,
+            'nombre'=>$nombre,
+            'descripcion'=>$descripcion,
+        ], 200);
     }
 }

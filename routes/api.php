@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\MovimientoStockController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use Illuminate\Http\Request;
@@ -35,3 +36,8 @@ Route::post('/productos', [ProductoController::class, 'store']);
 Route::put('/productos/{id}', [ProductoController::class, 'update']);
 
 Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
+
+// RUTAS MOVIMIENTO
+
+Route::get('/movimientos', [MovimientoStockController::class, 'index']);
+Route::post('/movimientos', [MovimientoStockController::class, 'store']);

@@ -27,10 +27,12 @@ Route::middleware('jwt')->group(function () {
     Route::get('/productos', [ProductoController::class, 'index']);
     Route::post('/productos', [ProductoController::class, 'store']);
     Route::put('/productos/{id}', [ProductoController::class, 'update']);
-    Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
+
 
     Route::get('/movimientos', [MovimientoStockController::class, 'index']);
     Route::post('/movimientos', [MovimientoStockController::class, 'store']);
 });
 
-
+Route::middleware(['jwt', 'role:admin'])->group(function () {
+        Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
+    });

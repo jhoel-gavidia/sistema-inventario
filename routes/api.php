@@ -12,48 +12,25 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::middleware(['jwt', 'role:admin'])->group(function () {
-    Route::get('/protected', function () {
-        return response()->json([
-            'message' => 'Acceso concedido',
-            'user' => request()->user(),
-        ]);
-    });
+Route::middleware('jwt')->group(function () {
+
+    Route::get('/categorias', [CategoriaController::class, 'index']);
+    Route::post('/categorias', [CategoriaController::class, 'store']);
+    Route::put('/categorias/{id}', [CategoriaController::class, 'update']);
+    Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy']);
+
+    Route::get('/proveedores', [ProveedorController::class, 'index']);
+    Route::post('/proveedores', [ProveedorController::class, 'store']);
+    Route::put('/proveedores/{id}', [ProveedorController::class, 'update']);
+    Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy']);
+
+    Route::get('/productos', [ProductoController::class, 'index']);
+    Route::post('/productos', [ProductoController::class, 'store']);
+    Route::put('/productos/{id}', [ProductoController::class, 'update']);
+    Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
+
+    Route::get('/movimientos', [MovimientoStockController::class, 'index']);
+    Route::post('/movimientos', [MovimientoStockController::class, 'store']);
 });
-
-//RUTAS CATEGORIA
-
-Route::get('/categorias', [CategoriaController::class, 'index']);
-
-Route::post('/categorias', [CategoriaController::class, 'store']);
-
-Route::put('/categorias/{id}', [CategoriaController::class, 'update']);
-
-Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy']);
-
-//RUTAS PROVEEDOR
-
-Route::get('/proveedores', [ProveedorController::class, 'index']);
-
-Route::post('/proveedores', [ProveedorController::class, 'store']);
-
-Route::put('/proveedores/{id}', [ProveedorController::class, 'update']);
-
-Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy']);
-
-// RUTAS PRODUCTO
-
-Route::get('/productos', [ProductoController::class, 'index']);
-
-Route::post('/productos', [ProductoController::class, 'store']);
-
-Route::put('/productos/{id}', [ProductoController::class, 'update']);
-
-Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
-
-// RUTAS MOVIMIENTO
-
-Route::get('/movimientos', [MovimientoStockController::class, 'index']);
-Route::post('/movimientos', [MovimientoStockController::class, 'store']);
 
 

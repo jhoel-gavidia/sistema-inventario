@@ -1,58 +1,404 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Inventario API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST para gestión de inventario desarrollada con Laravel.
 
-## About Laravel
+## Autenticación
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+La API utiliza JWT (JSON Web Token). Las rutas protegidas requieren el header:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+Authorization: Bearer <token>
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Obtienes el token al hacer login en `/api/auth/login`.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Endpoints
 
-## Code of Conduct
+### Auth
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### POST `/api/auth/register`
 
-## Security Vulnerabilities
+Registra un nuevo usuario. **No requiere autenticación.**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Body:**
+```json
+{
+    "name": "Juan Pérez",
+    "email": "juan@example.com",
+    "password": "secret123"
+}
+```
 
-## License
+**Respuesta 201:**
+```json
+{
+    "message": "Usuario registrado exitosamente",
+    "user": {
+        "id": 1,
+        "name": "Juan Pérez",
+        "email": "juan@example.com"
+    }
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+#### POST `/api/auth/login`
+
+Inicia sesión y devuelve un token JWT. **No requiere autenticación.**
+
+**Body:**
+```json
+{
+    "email": "juan@example.com",
+    "password": "secret123"
+}
+```
+
+**Respuesta 200:**
+```json
+{
+    "message": "Login exitoso",
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+        "id": 1,
+        "name": "Juan Pérez",
+        "email": "juan@example.com"
+    }
+}
+```
+
+---
+
+### Categorías
+
+#### GET `/api/categorias`
+
+Lista todas las categorías. **Requiere autenticación.**
+
+**Respuesta 200:**
+```json
+[
+    {
+        "id": 1,
+        "nombre": "Electrónica",
+        "descripcion": "Dispositivos electrónicos",
+        "created_at": "2026-09-03T10:00:00.000000Z",
+        "updated_at": "2026-09-03T10:00:00.000000Z"
+    }
+]
+```
+
+---
+
+#### POST `/api/categorias`
+
+Crea una categoría. **Requiere autenticación.**
+
+**Body:**
+```json
+{
+    "nombre": "Electrónica",
+    "descripcion": "Dispositivos electrónicos"
+}
+```
+
+**Respuesta 201:**
+```json
+{
+    "id": 1,
+    "nombre": "Electrónica",
+    "descripcion": "Dispositivos electrónicos"
+}
+```
+
+---
+
+#### PUT `/api/categorias/{id}`
+
+Actualiza una categoría. **Requiere autenticación.**
+
+**Body:**
+```json
+{
+    "nombre": "Electrónica Actualizada",
+    "descripcion": "Nueva descripción"
+}
+```
+
+**Respuesta 200:**
+```json
+{
+    "id": 1,
+    "nombre": "Electrónica Actualizada",
+    "descripcion": "Nueva descripción"
+}
+```
+
+---
+
+#### DELETE `/api/categorias/{id}`
+
+Elimina una categoría. **Requiere autenticación.**
+
+**Respuesta 200:**
+```json
+{
+    "message": "Categoria eliminada con exito"
+}
+```
+
+---
+
+### Proveedores
+
+#### GET `/api/proveedores`
+
+Lista todos los proveedores. **Requiere autenticación.**
+
+**Respuesta 200:**
+```json
+[
+    {
+        "id": 1,
+        "nombre": "Proveedor ABC",
+        "contacto": "Carlos López",
+        "telefono": "5551234567",
+        "email": "contacto@abc.com",
+        "created_at": "2026-09-03T10:00:00.000000Z",
+        "updated_at": "2026-09-03T10:00:00.000000Z"
+    }
+]
+```
+
+---
+
+#### POST `/api/proveedores`
+
+Crea un proveedor. **Requiere autenticación.**
+
+**Body:**
+```json
+{
+    "nombre": "Proveedor ABC",
+    "contacto": "Carlos López",
+    "telefono": "5551234567",
+    "email": "contacto@abc.com"
+}
+```
+
+**Respuesta 201:**
+```json
+{
+    "id": 1,
+    "nombre": "Proveedor ABC",
+    "contacto": "Carlos López",
+    "telefono": "5551234567",
+    "email": "contacto@abc.com"
+}
+```
+
+---
+
+#### PUT `/api/proveedores/{id}`
+
+Actualiza un proveedor. **Requiere autenticación.**
+
+**Body:**
+```json
+{
+    "nombre": "Proveedor ABC Actualizado",
+    "contacto": "Carlos López",
+    "telefono": "5559876543",
+    "email": "nuevo@abc.com"
+}
+```
+
+**Respuesta 200:**
+```json
+{
+    "id": 1,
+    "nombre": "Proveedor ABC Actualizado",
+    "contacto": "Carlos López",
+    "telefono": "5559876543",
+    "email": "nuevo@abc.com"
+}
+```
+
+---
+
+#### DELETE `/api/proveedores/{id}`
+
+Elimina un proveedor. **Requiere autenticación.**
+
+**Respuesta 200:**
+```json
+{
+    "message": "Proveedor eliminado con exito"
+}
+```
+
+---
+
+### Productos
+
+#### GET `/api/productos`
+
+Lista todos los productos con categoría y proveedor. **Requiere autenticación.**
+
+**Respuesta 200:**
+```json
+[
+    {
+        "nombre": "Laptop HP",
+        "descripcion": "Laptop 15 pulgadas",
+        "precio": 15000.00,
+        "stock_actual": 25,
+        "categoria": "Electrónica",
+        "proveedor": "Proveedor ABC"
+    }
+]
+```
+
+---
+
+#### POST `/api/productos`
+
+Crea un producto. **Requiere autenticación.**
+
+**Body:**
+```json
+{
+    "nombre": "Laptop HP",
+    "descripcion": "Laptop 15 pulgadas",
+    "precio": 15000.00,
+    "stock_actual": 25,
+    "categoria_id": 1,
+    "proveedor_id": 1
+}
+```
+
+**Respuesta 201:**
+```json
+{
+    "id": 1,
+    "nombre": "Laptop HP",
+    "descripcion": "Laptop 15 pulgadas",
+    "precio": 15000.00,
+    "stock_actual": 25,
+    "categoria_id": 1,
+    "proveedor_id": 1
+}
+```
+
+---
+
+#### PUT `/api/productos/{id}`
+
+Actualiza un producto. **Requiere autenticación.**
+
+**Body:**
+```json
+{
+    "nombre": "Laptop HP Actualizada",
+    "descripcion": "Laptop 17 pulgadas",
+    "precio": 18000.00,
+    "stock_actual": 20,
+    "categoria_id": 1,
+    "proveedor_id": 1
+}
+```
+
+**Respuesta 200:**
+```json
+{
+    "id": 1,
+    "nombre": "Laptop HP Actualizada",
+    "descripcion": "Laptop 17 pulgadas",
+    "precio": 18000.00,
+    "stock_actual": 20,
+    "categoria_id": 1,
+    "proveedor_id": 1
+}
+```
+
+---
+
+#### DELETE `/api/productos/{id}`
+
+Elimina un producto. **Requiere autenticación.**
+
+**Respuesta 200:**
+```json
+{
+    "message": "Producto no encontrado"
+}
+```
+
+---
+
+### Movimientos de Stock
+
+#### GET `/api/movimientos`
+
+Lista todos los movimientos con producto y usuario. **Requiere autenticación.**
+
+**Respuesta 200:**
+```json
+[
+    {
+        "id": 1,
+        "producto": "Laptop HP",
+        "usuario": "Juan Pérez",
+        "tipo": "entrada",
+        "cantidad": 10,
+        "motivo": "Reabastecimiento",
+        "created_at": "2026-09-03T10:00:00.000000Z"
+    }
+]
+```
+
+---
+
+#### POST `/api/movimientos`
+
+Registra un movimiento de stock (entrada o salida). **Requiere autenticación.**
+
+**Body:**
+```json
+{
+    "producto_id": 1,
+    "user_id": 1,
+    "tipo": "entrada",
+    "cantidad": 10,
+    "motivo": "Reabastecimiento"
+}
+```
+
+Valores permitidos para `tipo`: `"entrada"` o `"salida"`.
+
+**Respuesta 201:**
+```json
+{
+    "message": "Movimiento registrado correctamente",
+    "producto_id": 1,
+    "tipo": "entrada",
+    "cantidad": 10,
+    "stock_anterior": 25,
+    "stock_nuevo": 35
+}
+```
+
+---
+
+## Errores comunes
+
+| Código | Descripción |
+|--------|-------------|
+| 401 | Token no proporcionado, inválido o expirado |
+| 403 | No tienes permisos para realizar esta acción |
+| 404 | Recurso no encontrado |
+| 422 | Datos de entrada inválidos |
+| 500 | Error interno del servidor |
